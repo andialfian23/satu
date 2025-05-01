@@ -12,7 +12,8 @@ class Level extends CI_Controller {
             redirect(base_url("Auth"));
         }
 
-        $this->load->model('level_model');
+        $this->load->model('Level_model');
+        $this->load->model('App_user_model');
     }
 
     public function index()
@@ -31,14 +32,13 @@ class Level extends CI_Controller {
             'datatables-responsive/js/dataTables.responsive.min.js',
             'datatables-responsive/js/responsive.bootstrap4.min.js',
         ];
-        $this->load->view('index',$data);
+        $this->load->view('admin/index',$data);
     }
 
     public function show()
     {
-        $column_order     = array('id_level', 'id_app', 'app_name', 'app_level', 'level_name');
-        $query  = $this->level_model->records($column_order);
         $data   = array();
+        $query  = $this->Level_model->records();
         foreach ($query as $key) {
             $data[] = [
                 'id_level'  => $key->id_level,
@@ -51,8 +51,8 @@ class Level extends CI_Controller {
 
         $output = array(
             "draw"              => $this->input->post('draw',TRUE),
-            "recordsFiltered"   => $this->level_model->recordsFiltered($column_order),
-            "recordsTotal"      => $this->level_model->recordsTotal(),
+            "recordsFiltered"   => $this->Level_model->recordsFiltered(),
+            "recordsTotal"      => $this->Level_model->recordsTotal(),
             "data"              => $data,
         );
 
@@ -149,5 +149,31 @@ class Level extends CI_Controller {
             'data' => $data,
         ];
         echo json_encode($output);
+    }
+
+    public function user(){
+        $id_level = !empty($this->input->post('id_level',TRUE))?$this->input->post('id_level',TRUE):0;
+        $id_app = !empty($this->input->post('id_app',TRUE))?$this->input->post('id_app',TRUE):0;
+        $query  = $this->App_user_model->records($id_level,$id_app);
+        $data   = array();
+        foreach ($query as $key) {
+            $data[] = [
+                'id_user'  => $key->id_user,
+                'username' => $key->username,
+                'title'    => $key->title,
+                'id_level'  => $key->id_level,
+                'app_level' => $key->app_level,
+                'level_name'=> $key->level_name,
+            ];
+        }
+
+        $output = array(
+            "draw"              => $this->input->post('draw',TRUE),
+            "recordsFiltered"   => $this->App_user_model->recordsFiltered($id_level,$id_app),
+            "recordsTotal"      => $this->App_user_model->recordsTotal($id_level,$id_app),
+            "data"              => $data,
+        );
+
+		echo json_encode($output);
     }
 }

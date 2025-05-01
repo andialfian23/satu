@@ -1,16 +1,22 @@
 <?php 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Level_model extends CI_Model {
-    private function _get_query()
+class App_user_model extends CI_Model {
+    
+    private function _get_query($id_level,$id_app)
     {
-        $column_order  = array('id_level', 'id_app', 'app_name', 'app_level', 'level_name');
+        $column_order = array('id_user','username','title','id_level','app_level','level_name');
         $column_search = $column_order;
         
-        $this->db->select('id_level, id_app, app_name, app_level, level_name')
-            ->from("(SELECT l.*, a.app_name 
-                    FROM t_level as l
-                    INNER JOIN t_app as a ON l.id_app = a.id_app) as v");
+        $this->db->select('id_user,username,title,id_level, app_level, level_name')
+            ->from("(SELECT u.id_user, u.username, u.title,
+                        l.id_level, l.app_level, l.level_name
+                    FROM t_user as u
+                    INNER JOIN t_app_user as au ON u.id_user=au.id_user
+                    INNER JOIN t_level as l ON au.id_level=l.id_level 
+                    WHERE au.id_level = {$id_level} AND l.id_app={$id_app}
+                    ) 
+                    as v");
 
         $i = 0;
         foreach ($column_search as $item) // looping awal
@@ -31,14 +37,13 @@ class Level_model extends CI_Model {
         if ($this->input->post('order',TRUE)) {
             $this->db->order_by($column_order[$this->input->post('order',TRUE)['0']['column']], $this->input->post('order',TRUE)['0']['dir']);
         } else {
-            $this->db->order_by('id_app', 'ASC');
-            $this->db->order_by('id_level', 'ASC');
+            $this->db->order_by('username', 'ASC');
         }
     }
     
-    public function records()
+    public function records($id_level,$id_app)
     {
-        $this->_get_query();
+        $this->_get_query($id_level,$id_app);
         
         if ($this->input->post('length',TRUE) != -1) {
             $this->db->limit($this->input->post('length',TRUE), $this->input->post('start',TRUE));
@@ -50,17 +55,19 @@ class Level_model extends CI_Model {
         }
     }
     
-    public function recordsFiltered()
+    public function recordsFiltered($id_level,$id_app)
     {
-        $this->_get_query();
+        $this->_get_query($id_level,$id_app);
         return $this->db->get()->num_rows();
     }
     
     public function recordsTotal()
     {
-        $this->db->query("SELECT l.*, a.app_name 
-                    FROM t_level as l
-                    INNER JOIN t_app as a ON l.id_app = a.id_app");
+        $this->db->query("SELECT u.id_user, u.username, u.title 
+                    FROM t_user as u
+                    INNER JOIN t_app_user as au ON u.id_user = au.id_user
+                    INNER JOIN t_level as l ON au.id_level=l.id_level");
+                    
         return $this->db->count_all_results();
     }
 }

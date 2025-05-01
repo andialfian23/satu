@@ -20,7 +20,7 @@ class Dashboard extends CI_Controller {
 	{
         $data['content'] = 'dashboard/home';
         $data['custom_js'] = 'home';
-        $this->load->view('index',$data);
+        $this->load->view('admin/index',$data);
     }
 
 	public function index2()

@@ -20,17 +20,14 @@ class User extends CI_Controller {
         $data['template_css'] = [
             'datatables-bs4/css/dataTables.bootstrap4.min.css',
             'datatables-responsive/css/responsive.bootstrap4.min.css',
-            'datatables-buttons/css/buttons.bootstrap4.min.css'
         ];
         $data['template_js'] = [
             'datatables/jquery.dataTables.min.js',
             'datatables-bs4/js/dataTables.bootstrap4.min.js',
             'datatables-responsive/js/dataTables.responsive.min.js',
             'datatables-responsive/js/responsive.bootstrap4.min.js',
-            'datatables-buttons/js/dataTables.buttons.min.js',
-            'datatables-buttons/js/buttons.bootstrap4.min.js',
         ];
         $data['users'] = $this->db->get('t_user');
-        $this->load->view('index',$data);
+        $this->load->view('admin/index',$data);
     }
 }

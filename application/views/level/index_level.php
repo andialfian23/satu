@@ -22,6 +22,31 @@
     </div>
 </div>
 
+<div class="card">
+    <div class="card-header">
+        <a href="#" class="btn btn-dark" data-toggle="modal" data-target="#modal-level" id="btn-add-user">Add User</a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm responsive dataTable no-wrap" id="tbl-user" width="100%">
+                <thead>
+                    <tr>
+                        <th>ID User</th>
+                        <th>Username</th>
+                        <th>Title</th>
+                        <th>ID Level</th>
+                        <th>App Level</th>
+                        <th>Level Name</th>
+                        <th>--</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modal-level">
     <div class="modal-dialog modal-md">
         <div class="modal-content">
@@ -74,15 +99,17 @@
 const base_url = window.location.origin + "/Satu/Level/";
 let proses = null;
 let id_level = null;
+let id_app = null;
 let tbl_level = null;
+let tbl_user = null;
 
 $(document).ready(function() {
     tbl_level = $("#tbl-level").DataTable({
         autoWidth: true,
         responsive: true,
-        "columnDefs": [{
-            "orderable": false,
-            "targets": [5]
+        columnDefs: [{
+            orderable: false,
+            targets: [5]
         }],
         serverSide: true,
         processing: true,
@@ -103,7 +130,10 @@ $(document).ready(function() {
                 data: 'app_level'
             },
             {
-                data: 'level_name'
+                data: 'level_name',
+                render: function(data, type, row, meta) {
+                    return `<a href="#" class="btn-detail" data-level="${row.id_level}" data-app="${row.id_app}">${data}</a>`;
+                }
             },
             {
                 data: 'id_level',
@@ -125,6 +155,57 @@ $(document).ready(function() {
             },
         ],
     });
+
+    tbl_user = $("#tbl-user").DataTable({
+        autoWidth: true,
+        responsive: true,
+        columnDefs: [{
+            orderable: false,
+            targets: [6]
+        }],
+        serverSide: true,
+        processing: true,
+        ajax: {
+            url: base_url + "user",
+            type: "POST",
+            data: function(d) {
+                d.id_level = id_level;
+                d.id_app = id_app;
+            }
+        },
+        columns: [{
+                data: 'id_user',
+            },
+            {
+                data: 'username'
+            },
+            {
+                data: 'title'
+            },
+            {
+                data: 'id_level'
+            },
+            {
+                data: 'app_level'
+            },
+            {
+                data: 'level_name',
+            },
+            {
+                data: 'id_level',
+                className: 'text-nowrap',
+                render: function(data, type, row, meta) {
+                    return `<a href="#modal-level" data-toggle="modal" class="btn btn-info btn-sm btn-edit"
+                            data-id="${data}">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="#" class="btn btn-danger btn-sm btn-delete" data-id="${data}">
+                            <i class="fa fa-trash"></i>
+                        </a>`;
+                }
+            },
+        ],
+    });
 });
 
 $(document).on("click", "#btn-add", function() {
@@ -133,10 +214,11 @@ $(document).on("click", "#btn-add", function() {
 });
 
 $(document).on("click", ".btn-edit", function() {
+    id_level = $(this).data('id');
     proses = "update";
     $("#modal-level input").val(null);
-    id_level = $(this).data('id');
     $('#id_level').val(id_level);
+
     $.ajax({
         url: base_url + 'get',
         type: 'POST',
@@ -202,5 +284,11 @@ $(document).on("click", ".btn-delete", function() {
             },
         });
     }
+});
+
+$(document).on('click', ".btn-detail", function() {
+    id_level = $(this).data('level');
+    id_app = $(this).data('app');
+    tbl_user.ajax.reload(null, false);
 });
 </script>

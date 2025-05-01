@@ -31,13 +31,13 @@
                 </li>
                 <li class="nav-item">
                     <a href="<?= base_url('App') ?>" class="nav-link">
-                        <i class="nav-icon fas fa-file"></i>
+                        <i class="nav-icon fas fa-clipboard-check"></i>
                         <p>Apps</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="<?= base_url('Level') ?>" class="nav-link">
-                        <i class="nav-icon fas fa-file"></i>
+                        <i class="nav-icon fas fa-shield-alt"></i>
                         <p>Level Apps</p>
                     </a>
                 </li>

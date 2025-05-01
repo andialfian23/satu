@@ -30,7 +30,7 @@ class App extends CI_Controller {
             'datatables-responsive/js/dataTables.responsive.min.js',
             'datatables-responsive/js/responsive.bootstrap4.min.js',
         ];
-        $this->load->view('index',$data);
+        $this->load->view('admin/index',$data);
     }
 
     public function show()
